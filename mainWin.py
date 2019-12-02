@@ -1,5 +1,5 @@
 # from PySide2 import QtCore, QtWidgets
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from zshell.tab import CustomTabWidget
 
 
@@ -10,11 +10,11 @@ class ZshellWindow(QtWidgets.QMainWindow):
         self.setObjectName("ZShell")
         self.resize(675, 810)
         self.setWindowTitle(QtWidgets.QApplication.translate("ZShell", "ZShell", None, -1))
-        self.setWindowIcon()
+        self.setWindowIcon(QtGui.QIcon('./shell.ico'))
         self.centralwidget = QtWidgets.QWidget()
         self.setCentralWidget(self.centralwidget)
         self.init_layout()
-        self.init_menubar()
+        #self.init_menubar()
         self.init_toolbar()
         self.init_tab()
 
