@@ -155,22 +155,30 @@ class ZShellToolBar(QtWidgets.QWidget):
 
     def show_session_manager(self):
         if not self.session_manager_dailog:
-            self.session_manager_dailog = SessionManagerWin(self.host_info, self.host_menu, self.session_action_index)
+            self.session_manager_dailog = SessionManagerWin(self.host_menu, self.session_action_index, self.main_win)
 
+        self.session_manager_dailog.flush(self.host_info)
+        self.session_manager_dailog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.session_manager_dailog.show()
 
 
 class SessionManagerWin(QtWidgets.QDialog):
 
-    def __init__(self, host_info, session_menu, session_action_index):
+    def __init__(self, session_menu, session_action_index, main_win):
         super(SessionManagerWin, self).__init__()
-        self.host_info = host_info
-        self.hosts = list(host_info.keys())
+        self.main_win = main_win
+        self.host_info = {}
+        self.hosts = list(self.host_info.keys())
         self.session_menu = session_menu
         self.session_action_index = session_action_index
         self.init_dialog()
         self.init_layout()
         self.init_ui()
+
+    def flush(self, host_info):
+        self.host_info = host_info
+        self.hosts = list(self.host_info.keys())
+        self.flush_session_list()
 
     def init_dialog(self):
         self.setWindowTitle("Sessions")
@@ -182,24 +190,34 @@ class SessionManagerWin(QtWidgets.QDialog):
         self.setLayout(self.layout_v)
 
     def init_ui(self):
-        self.add_session_list()
-
-    def add_session_list(self):
         self.session_list_view = QtWidgets.QListView(self)
         self.layout_v.addWidget(self.session_list_view)
-        self.slm = QtCore.QStringListModel()
-        self.slm.setStringList(self.hosts)
-        self.session_list_view.setModel(self.slm)
-        # self.session_list_view.clicked.connect(self.click_list_item)
         self.session_list_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.session_list_view.customContextMenuRequested.connect(self.open_menu)
+        self.session_list_view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        # self.session_list_view.clicked.connect(self.click_list_item)
+        self.session_list_view.doubleClicked.connect(self.connect_host)
+        self.slm = QtCore.QStringListModel()
 
-    def click_list_item(self, qModelIndex):
+    def flush_session_list(self):
+        self.slm.setStringList(self.hosts)
+        self.session_list_view.setModel(self.slm)
+
+    def connect_host(self, qModelIndex):
         try:
+            self.close()
             host = self.hosts[qModelIndex.row()]
-            print("你选择了: " + str(self.host_info[host]))
+            host_info = self.host_info[host]
+            self.main_win.tabWidget.ssh_tab_create(**host_info)
         except:
             traceback.print_exc()
+
+    # def click_list_item(self, qModelIndex):
+    #     try:
+    #         host = self.hosts[qModelIndex.row()]
+    #         print("你选择了: " + str(self.host_info[host]))
+    #     except:
+    #         traceback.print_exc()
 
     def open_menu(self, position):
         try:
