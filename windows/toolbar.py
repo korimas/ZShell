@@ -12,9 +12,10 @@ class ZShellToolBar(QtWidgets.QWidget):
         super(ZShellToolBar, self).__init__()
         self.main_win = main_win
         self.host_info = {}
-        self.connect_action_dict = {}
         self.session_manager_dailog = None
         self.session_action_index = {}
+        self.session_empty = True
+        self.empty_action = None
         self.init_layout()
         self.init_ui()
 
@@ -141,8 +142,25 @@ class ZShellToolBar(QtWidgets.QWidget):
         if hosts_text:
             self.host_info = json.loads(hosts_text)
 
+        if self.host_info:
+            self.session_empty = False
+
         for key, host_info in self.host_info.items():
             self.add_menu_action(host_info)
+
+        if self.session_empty:
+            self.add_empty_action()
+
+    def add_empty_action(self):
+        if not self.empty_action:
+            self.empty_action = QtWidgets.QAction(" - Empty - ", self.host_menu)
+            self.empty_action.setEnabled(False)
+        self.host_menu.addAction(self.empty_action)
+        self.session_empty = True
+
+    def delete_empty_action(self):
+        self.host_menu.removeAction(self.empty_action)
+        self.session_empty = False
 
     def add_menu_action(self, host_info):
         host = host_info['host']
@@ -152,10 +170,19 @@ class ZShellToolBar(QtWidgets.QWidget):
         host_connect_action.triggered.connect(lambda: self.connect_action_handler(key))
         self.host_menu.addAction(host_connect_action)
         self.session_action_index[key] = host_connect_action
+        if self.session_empty:
+            self.delete_empty_action()
+
+    def delete_menu_action(self, action_name):
+        self.host_menu.removeAction(self.session_action_index[action_name])
+        self.session_action_index.pop(action_name)
+
+        if not self.session_action_index:
+            self.add_empty_action()
 
     def show_session_manager(self):
         if not self.session_manager_dailog:
-            self.session_manager_dailog = SessionManagerWin(self.host_menu, self.session_action_index, self.main_win)
+            self.session_manager_dailog = SessionManagerWin(self)
 
         self.session_manager_dailog.flush(self.host_info)
         self.session_manager_dailog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -164,13 +191,12 @@ class ZShellToolBar(QtWidgets.QWidget):
 
 class SessionManagerWin(QtWidgets.QDialog):
 
-    def __init__(self, session_menu, session_action_index, main_win):
+    def __init__(self, toolbar):
         super(SessionManagerWin, self).__init__()
-        self.main_win = main_win
+        self.toolbar = toolbar
+        self.main_win = toolbar.main_win
         self.host_info = {}
-        self.hosts = list(self.host_info.keys())
-        self.session_menu = session_menu
-        self.session_action_index = session_action_index
+        self.hosts = []
         self.init_dialog()
         self.init_layout()
         self.init_ui()
@@ -230,9 +256,8 @@ class SessionManagerWin(QtWidgets.QDialog):
                 self.host_info.pop(host_key)
                 self.hosts.remove(host_key)
                 self.slm.removeRow(row_index)
+                self.toolbar.delete_menu_action(host_key)
                 new_hosts_text = json.dumps(self.host_info)
-                self.session_menu.removeAction(self.session_action_index[host_key])
-                self.session_action_index.pop(host_key)
                 with open("resources\hosts.json", 'w') as file_w:
                     file_w.write(new_hosts_text)
 
