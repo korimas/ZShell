@@ -38,5 +38,4 @@ download: https://github.com/zpdev/ZShell/releases
 
 ## 软件截图
 ![image](https://github.com/zpdev/ZShell/blob/master/resources/snapshot.png)
-
-
+![image](https://github.com/zpdev/ZShell/blob/master/resources/snapshot_2.png)
