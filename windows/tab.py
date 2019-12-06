@@ -25,7 +25,22 @@ class ZShellTabWidget(QtWidgets.QTabWidget):
         self.setTabsClosable(True)
         self.setUpdatesEnabled(True)
         self.set_right_corner_button()
+        self.tabBar().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tabBar().customContextMenuRequested.connect(self.open_menu)
+
         # self.insertTab(0, PuttyTab(), "New tab")
+
+    def open_menu(self, position):
+        try:
+            menu = QtWidgets.QMenu()
+            clone_action = menu.addAction("克隆标签")
+            action = menu.exec_(self.tabBar().mapToGlobal(position))
+            if action == clone_action:
+                clone_index = self.tabBar().tabAt(position)
+                widget = self.widget(clone_index)
+                self.ssh_tab_create(widget.host, widget.port, widget.user, widget.password, clone_index + 1)
+        except:
+            traceback.print_exc()
 
     def init_singal(self):
         self.currentChanged.connect(self.tab_change)
@@ -38,6 +53,7 @@ class ZShellTabWidget(QtWidgets.QTabWidget):
             self.widget(index).close_putty()
             self.widget(index).deleteLater()
             self.removeTab(index)
+            self.flush_index_id()
         except:
             traceback.print_exc()
 
@@ -51,8 +67,9 @@ class ZShellTabWidget(QtWidgets.QTabWidget):
         except:
             traceback.print_exc()
 
-    def ssh_tab_create(self, host, port=None, user=None, password=None):
-        index = self.count()
+    def ssh_tab_create(self, host, port=None, user=None, password=None, index=None):
+        if not index:
+            index = self.count()
         tab_name = "%s-%s" % (self.index_num, host)
         if not port:
             port = '22'
@@ -61,6 +78,12 @@ class ZShellTabWidget(QtWidgets.QTabWidget):
         self.insertTab(index, tab_widget, tab_name)
         self.index_num += 1
         self.setCurrentIndex(index)
+        self.flush_index_id()
+
+    def flush_index_id(self):
+        for i in range(0, self.count()):
+            title = "%s-%s" % (str(i + 1), self.widget(i).host)
+            self.setTabText(i, title)
 
 
 class PuttyTab(QtWidgets.QWidget):
