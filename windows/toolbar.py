@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 import json
 import traceback
+import os
 
 
 # from zshell.common.utils import do_in_thread
@@ -14,8 +15,10 @@ class ZShellToolBar(QtWidgets.QWidget):
         self.host_info = {}
         self.session_manager_dailog = None
         self.session_action_index = {}
+        self.upload_win = None
         self.session_empty = True
         self.empty_action = None
+        self.upload_button = None
         self.init_layout()
         self.init_ui()
 
@@ -28,18 +31,32 @@ class ZShellToolBar(QtWidgets.QWidget):
     def init_ui(self):
         self.add_sessions_button()
         self.add_quick_connect()
+        self.add_upload_area()
+        self.add_spacer()
         self.add_about_button()
 
+    def add_spacer(self):
+        self.spacer_item = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.layout_h.addItem(self.spacer_item)
+
+    def add_upload_area(self):
+        self.upload_button = UploadButton(self.main_win, self)
+        self.upload_button.setToolTip('上传至当前标签对应的主机')
+        self.upload_button.setText('拖动文件至此上传')
+        self.layout_h.addWidget(self.upload_button)
+
     def add_about_button(self):
-        self.about_button = QtWidgets.QToolButton(self)
+        self.about_button = QtWidgets.QPushButton(self)
         self.about_button.setToolTip('关于')
-        self.about_button.setIcon(self.style().standardIcon(
-            QtWidgets.QStyle.SP_DialogHelpButton))
+        # self.about_button.setIcon(self.style().standardIcon(
+        #     QtWidgets.QStyle.SP_DialogHelpButton))
+        self.about_button.setText('?')
+        self.about_button.setFixedWidth(24)
         self.layout_h.addWidget(self.about_button)
         self.about_button.clicked.connect(self.about)
 
     def about(self):
-        QtWidgets.QMessageBox.information(self, "关于", "作者：zpzhou@hillstonenet.com")
+        QtWidgets.QMessageBox.information(self, "关于", "作者：zpzhou@hillstonenet.com\n项目：https://github.com/zpdev/ZShell")
 
     def add_quick_connect(self):
         self.host_line_edit = QtWidgets.QLineEdit(self)
@@ -47,12 +64,6 @@ class ZShellToolBar(QtWidgets.QWidget):
         self.host_line_edit.setPlaceholderText("主机")
         self.host_line_edit.setFixedWidth(120)
         self.host_line_edit.returnPressed.connect(self.quick_connect_handler)
-
-        self.port_line_edit = QtWidgets.QLineEdit(self)
-        self.layout_h.addWidget(self.port_line_edit)
-        self.port_line_edit.setPlaceholderText("端口")
-        self.port_line_edit.setFixedWidth(120)
-        self.port_line_edit.returnPressed.connect(self.quick_connect_handler)
 
         self.user_line_edit = QtWidgets.QLineEdit(self)
         self.layout_h.addWidget(self.user_line_edit)
@@ -66,8 +77,14 @@ class ZShellToolBar(QtWidgets.QWidget):
         self.pass_line_edit.setFixedWidth(120)
         self.pass_line_edit.returnPressed.connect(self.quick_connect_handler)
 
+        self.port_line_edit = QtWidgets.QLineEdit(self)
+        self.layout_h.addWidget(self.port_line_edit)
+        self.port_line_edit.setPlaceholderText("端口(默认22)")
+        self.port_line_edit.setFixedWidth(120)
+        self.port_line_edit.returnPressed.connect(self.quick_connect_handler)
+
         self.save_session_button = QtWidgets.QToolButton(self)
-        self.save_session_button.setToolTip('保存')
+        self.save_session_button.setToolTip('保存登录信息')
         self.save_session_button.setIcon(self.style().standardIcon(
             QtWidgets.QStyle.SP_DialogSaveButton))
         self.layout_h.addWidget(self.save_session_button)
@@ -108,11 +125,12 @@ class ZShellToolBar(QtWidgets.QWidget):
 
     def quick_connect_handler(self):
         host = self.host_line_edit.text()
-        if not host:
-            return
         port = self.port_line_edit.text() or '22'
         user = self.user_line_edit.text() or None
         password = self.pass_line_edit.text() or None
+
+        if not host or not user or not password:
+            return
         self.main_win.tabWidget.ssh_tab_create(host, port, user, password)
 
     def add_sessions_button(self):
@@ -263,3 +281,41 @@ class SessionManagerWin(QtWidgets.QDialog):
 
         except:
             traceback.print_exc()
+
+
+class UploadButton(QtWidgets.QPushButton):
+
+    def __init__(self, main_win, parent=None):
+        super(UploadButton, self).__init__(parent)
+        self.main_win = main_win
+        self.init_ui()
+
+    def init_ui(self):
+        self.setAcceptDrops(True)
+
+    def dropEvent(self, event):
+        try:
+            links = []
+            for url in event.mimeData().urls():
+                links.append(str(url.toLocalFile()))
+            self.main_win.tabWidget.upload_files(links)
+
+        except Exception as e:
+            print(e)
+
+    def dragEnterEvent(self, event):
+        try:
+            if event.mimeData().hasUrls:
+                event.accept()
+            else:
+                event.ignore()
+        except Exception as e:
+            print(e)
+
+    # def dragMoveEvent(self, event):
+    #     try:
+    #         print("drag move event")
+    #         print(event)
+    #         event.ignore()
+    #     except Exception as e:
+    #         print(e)

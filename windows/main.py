@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from zshell.windows.tab import ZShellTabWidget
 from zshell.windows.toolbar import ZShellToolBar
 from zshell.windows.menubar import ZShellMenubar
@@ -21,6 +21,9 @@ class ZShellWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon('resources/shell.ico'))
         self.centralwidget = QtWidgets.QWidget()
         self.setCentralWidget(self.centralwidget)
+
+    def closeEvent(self, QCloseEvent):
+        self.tabWidget.close()
 
     def init_layout(self):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
