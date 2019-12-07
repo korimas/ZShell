@@ -59,28 +59,32 @@ class ZShellToolBar(QtWidgets.QWidget):
         QtWidgets.QMessageBox.information(self, "关于", "作者：zpzhou@hillstonenet.com\n项目：https://github.com/zpdev/ZShell")
 
     def add_quick_connect(self):
+        self.label = QtWidgets.QLabel(self)
+        self.label.setText("  快速登录：")
+        self.layout_h.addWidget(self.label)
+
         self.host_line_edit = QtWidgets.QLineEdit(self)
         self.layout_h.addWidget(self.host_line_edit)
         self.host_line_edit.setPlaceholderText("主机")
-        self.host_line_edit.setFixedWidth(120)
+        self.host_line_edit.setFixedWidth(100)
         self.host_line_edit.returnPressed.connect(self.quick_connect_handler)
 
         self.user_line_edit = QtWidgets.QLineEdit(self)
         self.layout_h.addWidget(self.user_line_edit)
         self.user_line_edit.setPlaceholderText("用户名")
-        self.user_line_edit.setFixedWidth(120)
+        self.user_line_edit.setFixedWidth(100)
         self.user_line_edit.returnPressed.connect(self.quick_connect_handler)
 
         self.pass_line_edit = QtWidgets.QLineEdit(self)
         self.layout_h.addWidget(self.pass_line_edit)
         self.pass_line_edit.setPlaceholderText("密码")
-        self.pass_line_edit.setFixedWidth(120)
+        self.pass_line_edit.setFixedWidth(100)
         self.pass_line_edit.returnPressed.connect(self.quick_connect_handler)
 
         self.port_line_edit = QtWidgets.QLineEdit(self)
         self.layout_h.addWidget(self.port_line_edit)
-        self.port_line_edit.setPlaceholderText("端口(默认22)")
-        self.port_line_edit.setFixedWidth(120)
+        self.port_line_edit.setPlaceholderText("端口(22)")
+        self.port_line_edit.setFixedWidth(100)
         self.port_line_edit.returnPressed.connect(self.quick_connect_handler)
 
         self.save_session_button = QtWidgets.QToolButton(self)
@@ -97,11 +101,13 @@ class ZShellToolBar(QtWidgets.QWidget):
 
     def record_save(self):
         host = self.host_line_edit.text()
-        if not host:
-            return
         port = self.port_line_edit.text() or '22'
         user = self.user_line_edit.text() or None
         password = self.pass_line_edit.text() or None
+
+        if not host or not user or not password:
+            QtWidgets.QMessageBox.information(self, "提示", "请输入完整的登录信息")
+            return
 
         host_info = {
             "host": host,
@@ -130,6 +136,7 @@ class ZShellToolBar(QtWidgets.QWidget):
         password = self.pass_line_edit.text() or None
 
         if not host or not user or not password:
+            QtWidgets.QMessageBox.information(self, "提示", "请输入完整的登录信息")
             return
         self.main_win.tabWidget.ssh_tab_create(host, port, user, password)
 

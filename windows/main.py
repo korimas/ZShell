@@ -16,7 +16,7 @@ class ZShellWindow(QtWidgets.QMainWindow):
 
     def init_window(self):
         self.setObjectName("ZShell")
-        self.resize(675, 810)
+        self.resize(675, 710)
         self.setWindowTitle("ZShell")
         self.setWindowIcon(QtGui.QIcon('resources/shell.ico'))
         self.centralwidget = QtWidgets.QWidget()
