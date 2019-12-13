@@ -2,7 +2,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool
 from functools import wraps
 
 pool = QThreadPool()
-pool.setMaxThreadCount(3)
+pool.setMaxThreadCount(5)
 
 
 class ZShellRunner(QRunnable):
@@ -28,3 +28,15 @@ def do_in_thread(fn):
         pool.start(t)
 
     return _inner_
+
+
+class SingletonMetaClass(type):
+
+    def __call__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            cls._instance = super().__call__(*args, **kwargs)  # __call__ here is __init__ of new object
+        return cls._instance
+
+
+class Singleton(metaclass=SingletonMetaClass):
+    pass
