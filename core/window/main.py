@@ -1,7 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from zshell.core.manage import PluginManager
 from zshell.core.window.toolbar import ZShellToolBar
-from zshell.plugin.manager import enable_plugins
 
 
 class ZShellWindow(QtWidgets.QMainWindow):
@@ -11,7 +10,7 @@ class ZShellWindow(QtWidgets.QMainWindow):
         self._setup_win_base()
         self._setup_layout()
         self._setup_toolbar()
-        self._setup_plugins()
+        # self._setup_plugins()
 
     def _setup_win_base(self):
         self.setObjectName("ZShell")
@@ -31,10 +30,10 @@ class ZShellWindow(QtWidgets.QMainWindow):
         self.gridLayout.addLayout(self.layout_body, 1, 0, 1, -1)
         self.setLayout(self.gridLayout)
 
-    def _setup_plugins(self):
+    def start_plugins(self, plugins):
         plugin_manager = PluginManager()
         plugin_manager.set_main_win(self)
-        plugin_manager.start_plugins(enable_plugins)
+        plugin_manager.start_plugins(plugins)
 
     def _setup_toolbar(self):
         self.toolbar = ZShellToolBar(self)
