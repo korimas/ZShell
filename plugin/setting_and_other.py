@@ -4,7 +4,8 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from zshell.core.manage import PluginManager
 import time
 import os
-from zshell.core.app import app, main_win
+import webbrowser
+from zshell.core.app import main_win
 
 
 class SettingButton(QtWidgets.QToolButton):
@@ -43,7 +44,14 @@ class SettingQmenu(QtWidgets.QMenu):
         self.addAction(self.setting_action)
         self.help_action = QtWidgets.QAction("帮助", self)
         self.help_action.setShortcut("Ctrl+H")
+        self.help_action.triggered.connect(self.help_action_handler)
         self.addAction(self.help_action)
+
+    def help_action_handler(self):
+        try:
+            webbrowser.open('https://github.com/zpdev/ZShell')
+        except:
+            pass
 
     def showEvent(self, event):
         menu_x_pos = self.pos().x()
