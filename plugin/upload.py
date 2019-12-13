@@ -85,7 +85,6 @@ class UploadWindow(QtWidgets.QDialog):
             if exitCode == 0:
                 self.update_percent(99)
                 self.close()
-                self.deleteLater()
             else:
                 self.error_msg(exitCode)
         except:
