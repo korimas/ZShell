@@ -16,9 +16,17 @@ class SettingButton(QtWidgets.QToolButton):
 
     def _setup_ui(self):
         set_button_style = '''
-        QToolButton{background-color:transparent;}
-        QToolButton::menu-indicator{image:none;}
-        QToolButton:hover { background-color:rgb(176, 176, 176) }
+        QToolButton::menu-indicator{
+            image:none;
+        }
+        QToolButton {
+            background-color:transparent;
+            border: none;
+        }
+        QToolButton:hover { 
+            background-color: lightGray; 
+            border: none;
+        }
         '''
         self.setPopupMode(self.InstantPopup)
         self.setText(" ••• ")
