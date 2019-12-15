@@ -50,6 +50,7 @@ class ListTabMenu(QtWidgets.QMenu):
 
 
 class ZShellTab(QtWidgets.QWidget):
+    right_click_menu = None
 
     def __init__(self, index, tab_widget, parent=None):
         super(ZShellTab, self).__init__(parent)
@@ -88,6 +89,9 @@ class ZShellTab(QtWidgets.QWidget):
         pass
 
     def deal_right_click_action(self, action):
+        pass
+
+    def start(self):
         pass
 
 
@@ -177,6 +181,7 @@ class ZShellTabWidget(QtWidgets.QTabWidget):
 
         tab_widget = tab_cls(index, self, **kwargs)
         self.insertTab(index, tab_widget, tab_widget.gen_tab_name())
+        self.setCurrentIndex(index)
         self.list_tabs_menu.insert_action(index, tab_widget.get_tab_list_action())
         self.flush_index()
         return tab_widget

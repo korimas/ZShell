@@ -4,12 +4,13 @@ from zshell.common.utils import do_in_thread
 from PyQt5 import QtCore, QtWidgets, QtGui
 import win32gui
 import win32con
+import win32api
+import win32process
 import time
 import os
 
 
 class PuttyTab(ZShellTab):
-    right_click_menu = None
 
     def __init__(self, index, tab_widget, host_info, parent=None):
         super(PuttyTab, self).__init__(index, tab_widget, parent)
@@ -97,6 +98,19 @@ class PuttyTab(ZShellTab):
         win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, win32con.WS_TABSTOP)
 
         self.check_security_alert()
+
+    def reset_win_style(self):
+        style = win32gui.GetWindowLong(self.putty_hwnd, win32con.GWL_STYLE)
+        style = style & ~ win32con.WS_POPUP
+        style = style & ~ win32con.WS_CAPTION
+        style = style & ~ win32con.WS_THICKFRAME
+        style = style | win32con.WS_CHILD
+        win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, style)
+
+    def attach_thread_input(self):
+        cur_thread_id = win32api.GetCurrentThreadId()
+        putty_thread_id, putty_process_id = win32process.GetWindowThreadProcessId(self.putty_hwnd)
+        win32process.AttachThreadInput(putty_thread_id, cur_thread_id, True)
 
     def set_parent_for_putty(self):
         win32gui.SetParent(self.putty_hwnd, self.putty_container.winId())
