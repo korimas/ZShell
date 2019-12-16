@@ -175,9 +175,12 @@ class SessionManagerPlugin(ZShellPlugin):
 
     def add_host(self, host_info):
         host_key = self.gen_host_key(host_info)
-        self.hosts_info[host_key] = host_info
-        self.write_hosts_info_to_file()
-        self.add_host_info_action(host_key)
+        if host_key not in self.hosts_info:
+            self.hosts_info[host_key] = host_info
+            self.write_hosts_info_to_file()
+            self.add_host_info_action(host_key)
+        else:
+            self.box_info("当前主机信息已存在！")
 
     def remove_host(self, host_key, action_index):
         self.hosts_info.pop(host_key)
