@@ -45,11 +45,27 @@ class QuickConnectPlugin(ZShellPlugin):
         self.port_line_edit.returnPressed.connect(self.connect_host)
 
         self.save_session_button = QtWidgets.QToolButton()
-        self.save_session_button.setToolTip('保存登录信息')
-        self.save_session_button.setIcon(self.save_session_button.style().standardIcon(
-            QtWidgets.QStyle.SP_DialogSaveButton))
+        self.save_session_button.setPopupMode(self.save_session_button.MenuButtonPopup)
+        self.save_session_button.setFixedHeight(23)
+        self.save_session_button.setText("连接")
         self.add_to_toolbar(self.save_session_button)
-        self.save_session_button.clicked.connect(self.save_to_session_manager)
+        self.save_session_button.clicked.connect(self.connect_host)
+
+        menu_style = '''
+        QMenu::item {
+            padding-left:5px;
+            width: 44px;
+        }
+        QMenu::item:selected {
+            background: lightBlue;
+        }
+        '''
+        self.save_button_menu = QtWidgets.QMenu()
+        self.save_button_menu.setStyleSheet(menu_style)
+        self.save_session_button.setMenu(self.save_button_menu)
+        self.save_session_action = QtWidgets.QAction("保存", self.save_button_menu)
+        self.save_button_menu.addAction(self.save_session_action)
+        self.save_session_action.triggered.connect(self.save_to_session_manager)
 
     def get_session_manager_plugin(self):
         if not self.session_manager_plugin:
