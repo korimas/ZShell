@@ -130,11 +130,11 @@ class AboutContent(BaseContent):
 
     def _setup_content(self):
         self.desc_label = QtWidgets.QLabel()
-        self.desc_label.setText("此软件基于 putty 和 PyQt5 制作而成.\n")
+        self.desc_label.setText("此软件基于 putty 和 PyQt5 制作而成.")
         self.layout_v.addWidget(self.desc_label)
 
         self.author_label = QtWidgets.QLabel()
-        self.author_label.setText('作者：zpzhou@hillstonenet.com')
+        self.author_label.setText('作者：zpzhou@hillstonenet.com\n')
         self.layout_v.addWidget(self.author_label)
 
         self.link_label = QtWidgets.QLabel()
@@ -184,7 +184,8 @@ class SettingTab(ZShellTab):
         QListWidget::Item {
             border-left: 5px solid transparent;
             color: Black;
-            padding: 5px 20px;
+            margin: 5px 0px;
+            padding: 0px 20px;
         }
         QListWidget::Item:hover {            
             background: lightGray;
