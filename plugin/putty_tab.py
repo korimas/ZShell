@@ -18,6 +18,7 @@ class PuttyTab(ZShellTab):
         self.host = host_info.get("host")
         self.user = host_info.get("user")
         self.port = host_info.get("port")
+        self.protocol = host_info.get("protocol")
         self.password = host_info.get("password")
         self.title = self.host
         self.putty_hwnd = 0
@@ -56,7 +57,7 @@ class PuttyTab(ZShellTab):
         arguments = [
             # "-load",
             # "Default Settings",
-            "-ssh"
+            "-{0}".format(self.protocol)
         ]
         if self.user:
             arguments.extend(["-l", self.user])

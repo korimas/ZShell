@@ -213,7 +213,7 @@ class UploadPlugin(ZShellPlugin):
         try:
             tab_manager_plugin = PluginManager().get_plugin("TabManager")
             widget = tab_manager_plugin.get_currnet_tab()
-            if hasattr(widget, "host_info"):
+            if hasattr(widget, "host_info") and widget.host_info.get("protocol") in ['ssh', 'telnet']:
                 host_info = widget.host_info
                 if self.upload_window and not self.upload_window.upload_finished:
                     self.box_error("当前已有上传任务")

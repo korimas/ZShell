@@ -171,7 +171,11 @@ class SessionManagerPlugin(ZShellPlugin):
     def gen_host_key(self, host_info):
         host = host_info['host']
         user = host_info['user']
-        return "{0}({1})".format(host, user)
+        protocol = host_info['protocol']
+        host_key = "[{0}] {1}".format(protocol, host)
+        if user:
+            host_key = "{0} ({1})".format(host_key, user)
+        return host_key
 
     def add_host(self, host_info):
         host_key = self.gen_host_key(host_info)
@@ -193,9 +197,13 @@ class SessionManagerPlugin(ZShellPlugin):
 
     def connect_host(self, host_info):
         try:
-            putty_plugin = PluginManager().get_plugin("PuttyTab")
+            if host_info.get("protocol") == "vnc":
+                tab_plugin = PluginManager().get_plugin("VncTab")
+            else:
+                tab_plugin = PluginManager().get_plugin("PuttyTab")
+
             tab_manager_plugin = PluginManager().get_plugin("TabManager")
-            tab_cls = putty_plugin.get_tab_cls()
+            tab_cls = tab_plugin.get_tab_cls()
             tab_manager_plugin.tab_create(tab_cls, host_info=host_info)
         except:
             import traceback
