@@ -171,7 +171,10 @@ class SessionManagerPlugin(ZShellPlugin):
     def gen_host_key(self, host_info):
         host = host_info['host']
         user = host_info['user']
+        port = host_info['port']
         protocol = host_info['protocol']
+        if protocol == 'vnc':
+            host = "{0}:{1}".format(host, port)
         host_key = "[{0}] {1}".format(protocol, host)
         if user:
             host_key = "{0} ({1})".format(host_key, user)
