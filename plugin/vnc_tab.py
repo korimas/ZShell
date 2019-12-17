@@ -87,7 +87,7 @@ class VncTab(ZShellTab):
     def vnc_finished(self, exitCode, exitStatus):
         print("vnc exit code:{0}, status:{1}".format(exitCode, exitStatus))
         self.process_finished = True
-        self.deleteLater()
+        # self.deleteLater()
 
     def embed_vnc(self):
         if self.vnc_hwnd == 0:

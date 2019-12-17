@@ -78,8 +78,9 @@ class PuttyTab(ZShellTab):
         self.process.finished.connect(self.putty_finished)
         self.process.start(program, arguments)
 
-    def putty_finished(self):
-        self.deleteLater()
+    def putty_finished(self, exitCode, exitStatus):
+        pass
+        # self.deleteLater()
         # self.tab_widget.removeTab(self.index)
 
     def embed_putty(self):
