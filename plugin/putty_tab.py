@@ -133,6 +133,30 @@ class PuttyTab(ZShellTab):
                 self.index_lock.release()
                 self.dead_flag = True
 
+    # def hook_title_changed(self):
+    #     '''
+    #     HHOOK WINAPI SetWindowsHookEx(
+    #       _In_ int       idHook,
+    #       _In_ HOOKPROC  lpfn,
+    #       _In_ HINSTANCE hMod,
+    #       _In_ DWORD     dwThreadId
+    #     );
+    #     '''
+    #     import ctypes
+    #     # from ctypes.wintypes import *
+    #     class KBDLLHOOKSTRUCT(ctypes.Structure):
+    #         _fields_ = [('vkCode', ctypes.c_int),
+    #                     ('scanCode', ctypes.c_int),
+    #                     ('flags', ctypes.c_int),
+    #                     ('time', ctypes.c_int),
+    #                     ('dwExtraInfo', ctypes.c_int)]
+    #
+    #     KHOOK = ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(KBDLLHOOKSTRUCT))
+    #     c_khook = KHOOK(self.hook_handler)
+    #
+    # def hook_handler(self):
+    #     pass
+
     def reset_win_style(self):
         style = win32gui.GetWindowLong(self.putty_hwnd, win32con.GWL_STYLE)
         style = style & ~ win32con.WS_POPUP

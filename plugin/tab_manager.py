@@ -249,5 +249,10 @@ class TabManagerPlugin(ZShellPlugin):
     def get_currnet_tab(self):
         return self.tab_widget.currentWidget()
 
+    def enter_current_tab(self):
+        cur_tab = self.tab_widget.currentWidget()
+        if cur_tab:
+            cur_tab.enter_action()
+
     def close(self):
         self.tab_widget.close()

@@ -47,3 +47,10 @@ class ZShellWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         PluginManager().close()
+
+    def event(self, event):
+        if event.type() == QtCore.QEvent.WindowActivate:
+            tab_plugin = PluginManager().get_plugin("TabManager")
+            if tab_plugin:
+                tab_plugin.enter_current_tab()
+        return True
