@@ -2,7 +2,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool
 from functools import wraps
 
 pool = QThreadPool()
-pool.setMaxThreadCount(5)
+pool.setMaxThreadCount(10)
 
 
 class ZShellRunner(QRunnable):

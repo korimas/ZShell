@@ -21,6 +21,7 @@ class PuttyTab(ZShellTab):
         self.protocol = host_info.get("protocol")
         self.password = host_info.get("password")
         self.title = self.host
+        self.dead_flag = False
         self.putty_hwnd = 0
         self._setup_layout()
 
@@ -70,16 +71,28 @@ class PuttyTab(ZShellTab):
                 self.host,
                 "-P",
                 self.port,
-                "-loghost",
-                self.host
+                # "-loghost",
+                # self.host
             ]
         )
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.putty_finished)
+        self.process.errorOccurred.connect(self.putty_errorOccurred)
+        self.process.stateChanged.connect(self.putty_stateChanged)
+        self.process.error.connect(self.putty_error)
         self.process.start(program, arguments)
 
+    def putty_stateChanged(self, ProcessState):
+        print("putty state change")
+
+    def putty_error(self, error):
+        print("putty error")
+
+    def putty_errorOccurred(self, error):
+        print("putty error")
+
     def putty_finished(self, exitCode, exitStatus):
-        pass
+        self.dead_action()
         # self.deleteLater()
         # self.tab_widget.removeTab(self.index)
 
@@ -98,8 +111,27 @@ class PuttyTab(ZShellTab):
         self.set_parent_for_putty()
         self.horizontalLayout.addWidget(self.putty_container)
         win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, win32con.WS_TABSTOP)
-
         self.check_security_alert()
+
+    def check_is_alive(self):
+        if self.dead_flag:
+            return False
+
+        title = win32gui.GetWindowText(self.putty_hwnd)
+        if title == 'PuTTY (inactive)':
+            return False
+        return True
+
+    def dead_action(self):
+        if not self.dead_flag:
+            self.title = '(断开){0}'.format(self.title)
+            self.index_lock.acquire()
+            try:
+                self.tab_widget.setTabText(self.index, self.gen_tab_name())
+                self.tab_list_action.update_index(self.index, self.gen_tab_name())
+            finally:
+                self.index_lock.release()
+                self.dead_flag = True
 
     def reset_win_style(self):
         style = win32gui.GetWindowLong(self.putty_hwnd, win32con.GWL_STYLE)

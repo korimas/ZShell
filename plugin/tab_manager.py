@@ -1,6 +1,9 @@
 from zshell.plugin.base import ZShellPlugin
 from PyQt5 import QtCore, QtWidgets
 import traceback
+from zshell.common.utils import do_in_thread
+import time
+from threading import Lock
 
 
 class ListTabAction(QtWidgets.QAction):
@@ -57,6 +60,7 @@ class ZShellTab(QtWidgets.QWidget):
         self.index = index
         self.title = "ZShell_Tab"
         self.tab_widget = tab_widget
+        self.index_lock = Lock()
         self._setup_index_action(index)
 
     def _setup_index_action(self, index):
@@ -78,9 +82,13 @@ class ZShellTab(QtWidgets.QWidget):
         return self.tab_list_action
 
     def update_index(self, index):
-        self.index = index
-        self.tab_list_action.update_index(index, self.gen_tab_name())
-        self.update_tab_name()
+        self.index_lock.acquire()
+        try:
+            self.index = index
+            self.tab_list_action.update_index(index, self.gen_tab_name())
+            self.update_tab_name()
+        finally:
+            self.index_lock.release()
 
     def update_tab_name(self):
         self.tab_widget.setTabText(self.index, self.gen_tab_name())
@@ -92,6 +100,12 @@ class ZShellTab(QtWidgets.QWidget):
         pass
 
     def start(self):
+        pass
+
+    def check_is_alive(self):
+        return True
+
+    def dead_action(self):
         pass
 
 
@@ -106,7 +120,20 @@ class ZShellTabWidget(QtWidgets.QTabWidget):
         self._setup_signal()
         self._setup_right_click_menu()
         self.is_close = False
+        self.monitor_tabs()
         # self.test()
+
+    @do_in_thread
+    def monitor_tabs(self):
+        while True:
+            time.sleep(10)
+            for i in range(0, self.count()):
+                try:
+                    widget = self.widget(i)
+                    if not widget.check_is_alive():
+                        widget.dead_action()
+                except:
+                    pass
 
     def test(self):
         self.tab_create(ZShellTab)
