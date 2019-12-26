@@ -45,7 +45,7 @@ class ZShellWindow(QtWidgets.QMainWindow):
     def add_to_body(self, widget):
         self.layout_body.addWidget(widget)
 
-    def closeEvent(self, event):
+    def close_event(self, event):
         PluginManager().close()
 
     def event(self, event):
@@ -53,4 +53,8 @@ class ZShellWindow(QtWidgets.QMainWindow):
             tab_plugin = PluginManager().get_plugin("TabManager")
             if tab_plugin:
                 tab_plugin.enter_current_tab()
+
+        elif event.type() == QtCore.QEvent.Close:
+            self.close_event(event)
+
         return True

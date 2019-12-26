@@ -78,7 +78,7 @@ class PuttyTab(ZShellTab):
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.putty_finished)
         self.process.errorOccurred.connect(self.putty_errorOccurred)
-        self.process.stateChanged.connect(self.putty_stateChanged)
+        # self.process.stateChanged.connect(self.putty_stateChanged)
         self.process.error.connect(self.putty_error)
         self.process.start(program, arguments)
 
