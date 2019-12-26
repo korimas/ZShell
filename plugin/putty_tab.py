@@ -25,6 +25,9 @@ class PuttyTab(ZShellTab):
         self.putty_hwnd = 0
         self._setup_layout()
 
+    def enterEvent(self, event):
+        print("putty enter")
+
     def get_right_click_menu(self):
         if not self.right_click_menu:
             self.right_click_menu = QtWidgets.QMenu()
@@ -110,7 +113,8 @@ class PuttyTab(ZShellTab):
         self.putty_container = self.createWindowContainer(self.putty_window, self)
         self.set_parent_for_putty()
         self.horizontalLayout.addWidget(self.putty_container)
-        win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, win32con.WS_TABSTOP)
+        # win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, win32con.WS_TABSTOP)
+        self.reset_win_style()
         self.check_security_alert()
 
     def check_is_alive(self):
