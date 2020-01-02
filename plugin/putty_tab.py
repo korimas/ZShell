@@ -113,8 +113,8 @@ class PuttyTab(ZShellTab):
         self.putty_container = self.createWindowContainer(self.putty_window, self)
         self.set_parent_for_putty()
         self.horizontalLayout.addWidget(self.putty_container)
-        # win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, win32con.WS_TABSTOP)
-        self.reset_win_style()
+        win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, win32con.WS_TABSTOP)
+        # self.reset_win_style()
         self.check_security_alert()
 
     def check_is_alive(self):
@@ -163,10 +163,14 @@ class PuttyTab(ZShellTab):
 
     def reset_win_style(self):
         style = win32gui.GetWindowLong(self.putty_hwnd, win32con.GWL_STYLE)
-        style = style & ~ win32con.WS_POPUP
-        style = style & ~ win32con.WS_CAPTION
-        style = style & ~ win32con.WS_THICKFRAME
+        # style = style & ~ win32con.WS_POPUP
+        # style = style & ~ win32con.WS_CAPTION
+        # style = style & ~ win32con.WS_THICKFRAME
+        style = 0
         style = style | win32con.WS_CHILD
+        style = style | win32con.WS_TABSTOP
+        style = style | win32con.WS_CLIPCHILDREN
+        style = style | win32con.WS_CLIPSIBLINGS
         win32gui.SetWindowLong(self.putty_hwnd, win32con.GWL_STYLE, style)
 
     def attach_thread_input(self):
