@@ -7,6 +7,7 @@ download: https://github.com/zpdev/ZShell/releases
 本软件终端使用的是putty，所以相关配置可以直接修改putty的配置来实现。方法：请进入软件目录的resources目录，打开putty.exe，执行以下操作：
 ### 加载已有配置
 ZShell使用putty的Default Settings，所以修改前先Load该配置内容
+
 ![image](https://github.com/zpdev/ZShell/blob/master/resources/save.png)
 
 ### 编辑字体配置（Window->Apperance下的Font Settings）
@@ -17,10 +18,12 @@ ZShell使用putty的Default Settings，所以修改前先Load该配置内容
 
 ### 设置会话保持（重要）
 如果不配置，超时后就会断开连接。
+
 ![image](https://github.com/zpdev/ZShell/blob/master/resources/connect.png)
 
 ### Save到Default Settings。
 将修改后的配置重新保存到Default Settings
+
 ![image](https://github.com/zpdev/ZShell/blob/master/resources/save.png)
 
 关闭配置页面后，新打开的tab页面就会使用新的设置。
