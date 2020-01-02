@@ -15,7 +15,8 @@ ZShell使用putty的Default Settings，所以修改前先Load该配置内容
 ### 编辑主题颜色 (Window->Colours)
 ![image](https://github.com/zpdev/ZShell/blob/master/resources/colours.png)
 
-### 设置会话保持
+### 设置会话保持（重要）
+如果不配置，超时后就会断开连接。
 ![image](https://github.com/zpdev/ZShell/blob/master/resources/connect.png)
 
 ### Save到Default Settings。
