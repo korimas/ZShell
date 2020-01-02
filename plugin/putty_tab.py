@@ -45,9 +45,12 @@ class PuttyTab(ZShellTab):
         self.setLayout(self.horizontalLayout)
 
     def start(self):
-        self.start_putty_process()
-        self.embed_putty()
-        self.tab_widget.setCurrentIndex(self.index)
+        try:
+            self.start_putty_process()
+            self.embed_putty()
+            self.tab_widget.setCurrentIndex(self.index)
+        except:
+            pass
 
     def enter_action(self):
         win32gui.SetFocus(self.putty_hwnd)
@@ -127,15 +130,18 @@ class PuttyTab(ZShellTab):
         return True
 
     def dead_action(self):
-        if not self.dead_flag:
-            self.title = '(断开){0}'.format(self.title)
-            self.index_lock.acquire()
-            try:
-                self.tab_widget.setTabText(self.index, self.gen_tab_name())
-                self.tab_list_action.update_index(self.index, self.gen_tab_name())
-            finally:
-                self.index_lock.release()
-                self.dead_flag = True
+        try:
+            if not self.dead_flag:
+                self.title = '(断开){0}'.format(self.title)
+                self.index_lock.acquire()
+                try:
+                    self.tab_widget.setTabText(self.index, self.gen_tab_name())
+                    self.tab_list_action.update_index(self.index, self.gen_tab_name())
+                finally:
+                    self.index_lock.release()
+                    self.dead_flag = True
+        except:
+            pass
 
     # def hook_title_changed(self):
     #     '''
@@ -185,11 +191,14 @@ class PuttyTab(ZShellTab):
 
     @do_in_thread
     def check_security_alert(self):
-        time.sleep(0.5)
-        hwnd = win32gui.FindWindow('#32770', 'PuTTY Security Alert')
-        if not hwnd:
-            return
-        win32gui.SetForegroundWindow(hwnd)
+        try:
+            time.sleep(0.5)
+            hwnd = win32gui.FindWindow('#32770', 'PuTTY Security Alert')
+            if not hwnd:
+                return
+            win32gui.SetForegroundWindow(hwnd)
+        except:
+            pass
 
 
 class PuttyTabPlugin(ZShellPlugin):
