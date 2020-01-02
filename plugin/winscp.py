@@ -39,6 +39,6 @@ class WinScpPlugin(ZShellPlugin):
                 host_info = widget.host_info
                 self.start_winscp_process(host_info)
             else:
-                self.box_info("当前标签页不支持上传")
+                self.box_info("当前标签页不支持启动WinSCP")
         except:
             pass
