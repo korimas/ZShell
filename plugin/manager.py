@@ -5,6 +5,7 @@ from zshell.plugin.putty_tab import PuttyTabPlugin
 from zshell.plugin.upload import UploadPlugin
 from zshell.plugin.setting_and_other import SettingPlugin
 from zshell.plugin.vnc_tab import VncTabPlugin
+from zshell.plugin.winscp import WinScpPlugin
 
 enable_plugins = [
     SessionManagerPlugin,
@@ -12,6 +13,7 @@ enable_plugins = [
     TabManagerPlugin,
     PuttyTabPlugin,
     UploadPlugin,
+    VncTabPlugin,
+    WinScpPlugin,
     SettingPlugin,
-    VncTabPlugin
 ]
