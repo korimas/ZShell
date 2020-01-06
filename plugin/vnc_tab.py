@@ -62,8 +62,11 @@ class VncTab(ZShellTab):
         self.setLayout(self.horizontalLayout)
 
     def start(self):
-        self.start_vnc_process()
-        self.find_vnc_real_win()
+        try:
+            self.start_vnc_process()
+            self.find_vnc_real_win()
+        except:
+            pass
 
     def enter_action(self):
         win32gui.SetFocus(self.vnc_hwnd)

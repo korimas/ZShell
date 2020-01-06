@@ -57,7 +57,8 @@ class PuttyTab(ZShellTab):
 
     def close_action(self):
         print("close putty")
-        self.process.kill()
+        if hasattr(self, "process") and self.process:
+            self.process.kill()
 
     def start_putty_process(self):
         program = "%s/resources/putty.exe" % os.path.abspath('.')
