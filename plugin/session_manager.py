@@ -1,6 +1,7 @@
 from zshell.plugin.base import ZShellPlugin
 from zshell.core.manage import PluginManager
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
+from zshell.common.security import decrypt, encrypt
 import json
 
 
@@ -133,33 +134,43 @@ class SessionManagerPlugin(ZShellPlugin):
                 hosts_text = file_r.read()
 
             if hosts_text:
-                self.hosts_info = json.loads(hosts_text)
-        except:
-            pass
+                hosts_json_text = decrypt(hosts_text.encode())
+                self.hosts_info = json.loads(hosts_json_text)
+        except Exception as e:
+            self.box_error("无法读取主机信息，主机信息已损坏: {0}！".format(e))
 
     def write_hosts_info_to_file(self):
         try:
             new_hosts_text = json.dumps(self.hosts_info)
+            new_hosts_text = encrypt(new_hosts_text).decode()
 
             with open("resources\hosts.json", 'w') as file_w:
                 file_w.write(new_hosts_text)
-        except:
-            pass
+        except Exception as e:
+            self.box_error("保存主机信息失败:{0}！".format(e))
 
     # @do_in_thread
     def _setup_host_menu(self):
         self.host_menu = SessionManagerMenu()
+        # menu_style = '''
+        #         QMenu::item {
+        #             background: white;
+        #         }
+        #         '''
+        # self.host_menu.setStyleSheet(menu_style)
         self.toolbar_button.setMenu(self.host_menu)
         self.add_hosts_info_to_menu()
 
     def add_hosts_info_to_menu(self):
         self.read_hosts_info_from_file()
         for host_key, host_info in self.hosts_info.items():
-            self.add_host_info_action(host_key)
+            self.add_host_info_action(host_key, host_info['protocol'])
         self.host_menu.show()
 
-    def add_host_info_action(self, host_key):
+    def add_host_info_action(self, host_key, host_type):
         host_action = SessionManagerMenuAction(self, host_key, self.host_menu)
+        icon_path = "resources/{0}.ico".format(host_type)
+        host_action.setIcon(QtGui.QIcon(icon_path))
         self.host_menu.addAction(host_action)
 
     def del_host_info_action(self, action_index):
@@ -185,7 +196,7 @@ class SessionManagerPlugin(ZShellPlugin):
         if host_key not in self.hosts_info:
             self.hosts_info[host_key] = host_info
             self.write_hosts_info_to_file()
-            self.add_host_info_action(host_key)
+            self.add_host_info_action(host_key, host_info['protocol'])
         else:
             self.box_info("当前主机信息已存在！")
 
