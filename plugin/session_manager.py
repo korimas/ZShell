@@ -242,7 +242,7 @@ class CreateDirWindow(QtWidgets.QDialog):
         self._setup_ui()
         self.root_path = "resources/sessions"
         self.update_flag = False
-        self.old_dir_path=None
+        self.old_dir_path = None
 
     def update_dir(self, dir_path, dir_name):
         self.setWindowTitle("更新目录")
@@ -335,10 +335,10 @@ class SessionManagerWindow(QtWidgets.QDialog):
         self.create_button_menu.addAction(self.create_dir_action)
         self.create_dir_action.triggered.connect(self.create_dir)
 
-        self.update_button = QtWidgets.QPushButton()
-        self.update_button.setText("编辑")
-        self.button_layout.addWidget(self.update_button)
-        self.update_button.clicked.connect(self.update_session)
+        # self.update_button = QtWidgets.QPushButton()
+        # self.update_button.setText("编辑")
+        # self.button_layout.addWidget(self.update_button)
+        # self.update_button.clicked.connect(self.update_session)
 
         # self.delete_button = QtWidgets.QPushButton()
         # self.delete_button.setText("删除")
@@ -385,7 +385,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
     def create_session(self):
         current_index = self.view.currentIndex()
         self.session_info_window = SessionInfoWindow(self)
-        if current_index.row() >= 0 :
+        if current_index.row() >= 0:
 
             if self.file_model.isDir(current_index):
                 self.session_info_window.set_path(self.file_model.filePath(current_index))
@@ -421,6 +421,8 @@ class SessionManagerWindow(QtWidgets.QDialog):
             file_path = self.file_model.filePath(current_index)
             self.session_info_window.set_path(file_path)
             self.session_info_window.show()
+        elif action == self.update_dir_action:
+            self.update_session()
 
     def delete_action_handler(self, current_index):
         try:
@@ -432,6 +434,13 @@ class SessionManagerWindow(QtWidgets.QDialog):
         except:
             pass
 
+    def session_menu_exec(self, current_index, position):
+        action = self.session_manage_menu.exec_(self.view.mapToGlobal(position))
+        if action == self.delete_action:
+            self.delete_action_handler(current_index)
+        elif action == self.update_action:
+            self.update_session()
+
     def session_right_click(self, position):
         try:
             current_index = self.view.indexAt(position)
@@ -441,9 +450,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
                 if self.file_model.isDir(current_index):
                     self.dir_menu_exec(position)
                 else:
-                    action = self.session_manage_menu.exec_(self.view.mapToGlobal(position))
-                    if action == self.delete_action:
-                        self.delete_action_handler(current_index)
+                    self.session_menu_exec(current_index, position)
 
         except:
             import traceback
@@ -492,6 +499,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
     def _setup_session_manage_menu(self):
         self.session_manage_menu = QtWidgets.QMenu()
         self.delete_action = self.session_manage_menu.addAction("删除")
+        self.update_action = self.session_manage_menu.addAction("编辑")
 
     def _setup_session_manager_dir_menu(self):
         self.root_dir_session_menu = QtWidgets.QMenu()
@@ -502,6 +510,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
         self.create_session_action = self.dir_session_menu.addAction("新建会话")
         self.create_dir_action = self.dir_session_menu.addAction("新建目录")
         self.delete_dir_action = self.dir_session_menu.addAction("删除")
+        self.update_dir_action = self.dir_session_menu.addAction("编辑")
 
 
 class SessionManagerPlugin(ZShellPlugin):
@@ -548,15 +557,15 @@ class SessionManagerPlugin(ZShellPlugin):
 
     # @do_in_thread
     # def _setup_host_menu(self):
-        # self.host_menu = SessionManagerMenu()
-        # menu_style = '''
-        #         QMenu::item {
-        #             background: white;
-        #         }
-        #         '''
-        # self.host_menu.setStyleSheet(menu_style)
-        # self.toolbar_button.setMenu(self.host_menu)
-        # self.add_hosts_info_to_menu()
+    # self.host_menu = SessionManagerMenu()
+    # menu_style = '''
+    #         QMenu::item {
+    #             background: white;
+    #         }
+    #         '''
+    # self.host_menu.setStyleSheet(menu_style)
+    # self.toolbar_button.setMenu(self.host_menu)
+    # self.add_hosts_info_to_menu()
 
     # def add_hosts_info_to_menu(self):
     #     self.read_hosts_info_from_file()
