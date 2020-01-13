@@ -5,6 +5,7 @@ from zshell.common.security import decrypt, encrypt
 import json
 import shutil
 import os
+import subprocess
 
 
 class SessionManagerMenuAction(QtWidgets.QAction):
@@ -350,7 +351,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
         self.open_dir_button.clicked.connect(self.open_dir)
 
     def open_dir(self):
-        os.system('start explorer '+ "resources\\sessions")
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl().fromLocalFile(self.file_model.rootPath()))
 
     def create_dir(self):
         current_index = self.view.currentIndex()
