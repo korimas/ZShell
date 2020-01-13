@@ -11,6 +11,7 @@ import os
 
 
 class PuttyTab(ZShellTab):
+    signal = QtCore.pyqtSignal()
 
     def __init__(self, index, tab_widget, host_info, parent=None):
         super(PuttyTab, self).__init__(index, tab_widget, parent)
@@ -24,6 +25,7 @@ class PuttyTab(ZShellTab):
         self.dead_flag = False
         self.putty_hwnd = 0
         self._setup_layout()
+        self.signal.connect(self.embed_putty)
 
     def enterEvent(self, event):
         print("putty enter")
@@ -47,7 +49,7 @@ class PuttyTab(ZShellTab):
     def start(self):
         try:
             self.start_putty_process()
-            self.embed_putty()
+            self.find_putty_window()
             self.tab_widget.setCurrentIndex(self.index)
         except:
             pass
@@ -103,13 +105,20 @@ class PuttyTab(ZShellTab):
         # self.deleteLater()
         # self.tab_widget.removeTab(self.index)
 
-    def embed_putty(self):
+    @do_in_thread
+    def find_putty_window(self):
         max_time = 500
         while self.putty_hwnd == 0 and max_time > 0:
             time.sleep(0.01)
             self.putty_hwnd = win32gui.FindWindow('PuTTY', "%s - PuTTY" % self.host)
             max_time -= 1
 
+        if self.putty_hwnd == 0:
+            return
+
+        self.signal.emit()
+
+    def embed_putty(self):
         if self.putty_hwnd == 0:
             return
 
