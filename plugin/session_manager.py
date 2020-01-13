@@ -344,6 +344,14 @@ class SessionManagerWindow(QtWidgets.QDialog):
         # self.delete_button.setText("删除")
         # self.button_layout.addWidget(self.delete_button)
 
+        self.open_dir_button = QtWidgets.QPushButton()
+        self.open_dir_button.setText("浏览文件夹")
+        self.button_layout.addWidget(self.open_dir_button)
+        self.open_dir_button.clicked.connect(self.open_dir)
+
+    def open_dir(self):
+        os.system('start explorer '+ "resources\\sessions")
+
     def create_dir(self):
         current_index = self.view.currentIndex()
         file_path = self.file_model.filePath(current_index)
