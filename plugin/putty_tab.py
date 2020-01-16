@@ -16,12 +16,13 @@ class PuttyTab(ZShellTab):
     def __init__(self, index, tab_widget, host_info, parent=None):
         super(PuttyTab, self).__init__(index, tab_widget, parent)
         self.host_info = host_info
+        self.host_name = host_info.get('name')
         self.host = host_info.get("host")
         self.user = host_info.get("user")
         self.port = host_info.get("port")
         self.protocol = host_info.get("protocol")
         self.password = host_info.get("password")
-        self.title = self.host
+        self.title = self.host_name  or self.host
         self.dead_flag = False
         self.putty_hwnd = 0
         self._setup_layout()

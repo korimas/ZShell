@@ -354,84 +354,102 @@ class SessionManagerWindow(QtWidgets.QDialog):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl().fromLocalFile(self.file_model.rootPath()))
 
     def create_dir(self):
-        current_index = self.view.currentIndex()
-        file_path = self.file_model.filePath(current_index)
-        if not file_path:
-            file_path = "resources/sessions"
-        elif not self.file_model.isDir(current_index):
-            file_path = self.file_model.filePath(current_index.parent())
-        self.create_dir_window = CreateDirWindow(self)
-        self.create_dir_window.set_path(file_path)
-        self.create_dir_window.show()
-
-    def update_session(self):
-        current_index = self.view.currentIndex()
-        if self.file_model.isDir(current_index):
-            self.update_dir(current_index)
-        else:
+        try:
+            current_index = self.view.currentIndex()
             file_path = self.file_model.filePath(current_index)
-            parent_path = self.file_model.filePath(current_index.parent())
-            with open(file_path, 'r') as file:
-                hosts_text = file.read()
-                hosts_json_text = decrypt(hosts_text.encode())
-                host_info = json.loads(hosts_json_text)
-                file_name = self.file_model.fileName(current_index)
-                name, extension = os.path.splitext(file_name)
-                host_info['name'] = name
-                self.session_info_window = SessionInfoWindow(self)
-                self.session_info_window.load_host_info(host_info)
-                self.session_info_window.set_path(parent_path)
-                self.session_info_window.set_update(True)
-                self.session_info_window.show()
-
-    def update_dir(self, index):
-        dir_path = self.file_model.filePath(index)
-        self.create_dir_window = CreateDirWindow(self)
-        self.create_dir_window.set_path(self.file_model.filePath(index.parent()))
-        self.create_dir_window.update_dir(dir_path, self.file_model.fileName(index))
-        self.create_dir_window.show()
-
-    def create_session(self):
-        current_index = self.view.currentIndex()
-        self.session_info_window = SessionInfoWindow(self)
-        if current_index.row() >= 0:
-
-            if self.file_model.isDir(current_index):
-                self.session_info_window.set_path(self.file_model.filePath(current_index))
-            else:
-                self.session_info_window.set_path(self.file_model.filePath(current_index.parent()))
-
-        self.session_info_window.show()
-
-    def root_dir_menu_exec(self, position):
-        action = self.root_dir_session_menu.exec_(self.view.mapToGlobal(position))
-        if action == self.root_create_dir_action:
-            self.create_dir_window = CreateDirWindow(self)
-            self.create_dir_window.set_path("resources/sessions")
-            self.create_dir_window.show()
-
-        elif action == self.root_create_session_action:
-            self.session_info_window = SessionInfoWindow(self)
-            self.session_info_window.show()
-
-    def dir_menu_exec(self, position):
-        action = self.dir_session_menu.exec_(self.view.mapToGlobal(position))
-        current_index = self.view.indexAt(position)
-        if action == self.create_dir_action:
-            file_path = self.file_model.filePath(current_index)
+            if not file_path:
+                file_path = "resources/sessions"
+            elif not self.file_model.isDir(current_index):
+                file_path = self.file_model.filePath(current_index.parent())
             self.create_dir_window = CreateDirWindow(self)
             self.create_dir_window.set_path(file_path)
             self.create_dir_window.show()
-        elif action == self.delete_dir_action:
-            self.delete_action_handler(current_index)
+        except:
+            pass
 
-        elif action == self.create_session_action:
+    def update_session(self):
+        try:
+            current_index = self.view.currentIndex()
+            if self.file_model.isDir(current_index):
+                self.update_dir(current_index)
+            else:
+                file_path = self.file_model.filePath(current_index)
+                parent_path = self.file_model.filePath(current_index.parent())
+                with open(file_path, 'r') as file:
+                    hosts_text = file.read()
+                    hosts_json_text = decrypt(hosts_text.encode())
+                    host_info = json.loads(hosts_json_text)
+                    file_name = self.file_model.fileName(current_index)
+                    name, extension = os.path.splitext(file_name)
+                    host_info['name'] = name
+                    self.session_info_window = SessionInfoWindow(self)
+                    self.session_info_window.load_host_info(host_info)
+                    self.session_info_window.set_path(parent_path)
+                    self.session_info_window.set_update(True)
+                    self.session_info_window.show()
+        except:
+            pass
+
+    def update_dir(self, index):
+        try:
+            dir_path = self.file_model.filePath(index)
+            self.create_dir_window = CreateDirWindow(self)
+            self.create_dir_window.set_path(self.file_model.filePath(index.parent()))
+            self.create_dir_window.update_dir(dir_path, self.file_model.fileName(index))
+            self.create_dir_window.show()
+        except:
+            pass
+
+    def create_session(self):
+        try:
+            current_index = self.view.currentIndex()
             self.session_info_window = SessionInfoWindow(self)
-            file_path = self.file_model.filePath(current_index)
-            self.session_info_window.set_path(file_path)
+            if current_index.row() >= 0:
+
+                if self.file_model.isDir(current_index):
+                    self.session_info_window.set_path(self.file_model.filePath(current_index))
+                else:
+                    self.session_info_window.set_path(self.file_model.filePath(current_index.parent()))
+
             self.session_info_window.show()
-        elif action == self.update_dir_action:
-            self.update_session()
+        except:
+            pass
+
+    def root_dir_menu_exec(self, position):
+        try:
+            action = self.root_dir_session_menu.exec_(self.view.mapToGlobal(position))
+            if action == self.root_create_dir_action:
+                self.create_dir_window = CreateDirWindow(self)
+                self.create_dir_window.set_path("resources/sessions")
+                self.create_dir_window.show()
+
+            elif action == self.root_create_session_action:
+                self.session_info_window = SessionInfoWindow(self)
+                self.session_info_window.show()
+        except:
+            pass
+
+    def dir_menu_exec(self, position):
+        try:
+            action = self.dir_session_menu.exec_(self.view.mapToGlobal(position))
+            current_index = self.view.indexAt(position)
+            if action == self.create_dir_action:
+                file_path = self.file_model.filePath(current_index)
+                self.create_dir_window = CreateDirWindow(self)
+                self.create_dir_window.set_path(file_path)
+                self.create_dir_window.show()
+            elif action == self.delete_dir_action:
+                self.delete_action_handler(current_index)
+
+            elif action == self.create_session_action:
+                self.session_info_window = SessionInfoWindow(self)
+                file_path = self.file_model.filePath(current_index)
+                self.session_info_window.set_path(file_path)
+                self.session_info_window.show()
+            elif action == self.update_dir_action:
+                self.update_session()
+        except:
+            pass
 
     def delete_action_handler(self, current_index):
         try:
@@ -462,8 +480,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
                     self.session_menu_exec(current_index, position)
 
         except:
-            import traceback
-            traceback.print_exc()
+            pass
 
     def session_double_click_action(self, qModelIndex):
         try:
@@ -478,8 +495,7 @@ class SessionManagerWindow(QtWidgets.QDialog):
                 host_info = json.loads(hosts_json_text)
                 self.plugin.connect_host(host_info)
         except:
-            import traceback
-            traceback.print_exc()
+            pass
 
     # def flush_sessions(self):
     #     self.sessions = self.plugin.get_hosts_record()
@@ -539,9 +555,11 @@ class SessionManagerPlugin(ZShellPlugin):
         self.add_to_toolbar(self.toolbar_button)
 
     def show_session_manager(self):
-        if not self.session_manager_window:
+        try:
             self.session_manager_window = SessionManagerWindow(self, self.main_win)
-        self.session_manager_window.show()
+            self.session_manager_window.show()
+        except:
+            pass
 
     # def read_hosts_info_from_file(self):
     #     try:
